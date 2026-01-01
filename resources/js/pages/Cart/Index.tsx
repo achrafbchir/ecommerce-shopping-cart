@@ -1,6 +1,6 @@
 import CartController from '@/actions/App/Http/Controllers/CartController';
 import { checkout, index } from '@/routes/cart';
-import { Form, Head } from '@inertiajs/react';
+import { Form } from '@inertiajs/react';
 import { ShoppingBag } from 'lucide-react';
 
 import CartItemRow from '@/components/products/cart-item-row';
@@ -21,8 +21,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem } from '@/types';
+import ShopLayout from '@/layouts/shop-layout';
 
 interface Product {
     id: number;
@@ -43,24 +42,16 @@ interface CartIndexProps {
     total: string;
 }
 
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Shopping Cart',
-        href: index().url,
-    },
-];
-
 export default function CartIndex({ cartItems, total }: CartIndexProps) {
     const isEmpty = cartItems.length === 0;
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Shopping Cart" />
+        <ShopLayout title="Shopping Cart">
 
-            <div className="space-y-6">
+            <div className="container mx-auto space-y-6 px-4 py-8">
                 <div>
-                    <h1 className="text-2xl font-semibold">Shopping Cart</h1>
-                    <p className="text-muted-foreground">
+                    <h1 className="text-3xl font-bold">Shopping Cart</h1>
+                    <p className="mt-2 text-muted-foreground">
                         Review your items and proceed to checkout
                     </p>
                 </div>
@@ -152,7 +143,7 @@ export default function CartIndex({ cartItems, total }: CartIndexProps) {
                     </div>
                 )}
             </div>
-        </AppLayout>
+        </ShopLayout>
     );
 }
 

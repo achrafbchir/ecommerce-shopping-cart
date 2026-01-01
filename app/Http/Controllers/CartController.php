@@ -28,10 +28,12 @@ class CartController extends Controller
             ->get();
 
         $total = $cartItems->sum(fn ($item) => $item->total_price);
+        $cartCount = $cartItems->sum('quantity');
 
         return Inertia::render('Cart/Index', [
             'cartItems' => $cartItems,
             'total' => $total,
+            'cartCount' => $cartCount,
         ]);
     }
 
