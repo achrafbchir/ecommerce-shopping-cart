@@ -25,9 +25,14 @@ class CartController extends Controller
             ->cartItems()
             ->with('product')
             ->latest()
-            ->get();
+            ->get()
+            ->map(function ($item) {
+                $item->total_price = $item->quantity * (float) $item->product->price;
 
-        $total = $cartItems->sum(fn ($item) => $item->total_price);
+                return $item;
+            });
+
+        $total = $cartItems->sum('total_price');
         $cartCount = $cartItems->sum('quantity');
 
         return Inertia::render('Cart/Index', [
