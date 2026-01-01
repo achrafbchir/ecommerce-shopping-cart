@@ -100,7 +100,10 @@ export default function CartItemRow({ cartItem }: CartItemRowProps) {
                 </div>
             </TableCell>
             <TableCell className="font-medium">
-                ${parseFloat(cartItem.total_price).toFixed(2)}
+                $
+                {(
+                    parseFloat(cartItem.product.price) * cartItem.quantity
+                ).toFixed(2)}
             </TableCell>
             <TableCell>
                 <Form
