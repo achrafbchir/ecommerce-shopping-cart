@@ -1,12 +1,11 @@
 import { index } from '@/routes/products';
-import { Head, Link, router } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import { Search } from 'lucide-react';
 
 import ProductCard from '@/components/products/product-card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem } from '@/types';
+import ShopLayout from '@/layouts/shop-layout';
 
 interface Product {
     id: number;
@@ -35,13 +34,6 @@ interface ProductsIndexProps {
     };
 }
 
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Products',
-        href: index().url,
-    },
-];
-
 export default function ProductsIndex({
     products,
     filters,
@@ -58,15 +50,14 @@ export default function ProductsIndex({
     };
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Products" />
+        <ShopLayout title="Products">
 
-            <div className="space-y-6">
+            <div className="container mx-auto space-y-6 px-4 py-8">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-2xl font-semibold">Products</h1>
-                        <p className="text-muted-foreground">
-                            Browse our collection of products
+                        <h1 className="text-3xl font-bold">All Products</h1>
+                        <p className="mt-2 text-muted-foreground">
+                            Browse our complete collection of products
                         </p>
                     </div>
                 </div>
@@ -88,12 +79,12 @@ export default function ProductsIndex({
                 {products.data.length === 0 ? (
                     <div className="rounded-lg border border-dashed p-12 text-center">
                         <p className="text-muted-foreground">
-                            No products found.
+                            No products found. Try adjusting your search.
                         </p>
                     </div>
                 ) : (
                     <>
-                        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                             {products.data.map((product) => (
                                 <ProductCard key={product.id} product={product} />
                             ))}
@@ -129,7 +120,7 @@ export default function ProductsIndex({
                     </>
                 )}
             </div>
-        </AppLayout>
+        </ShopLayout>
     );
 }
 

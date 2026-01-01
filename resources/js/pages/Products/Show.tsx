@@ -1,6 +1,7 @@
 import CartController from '@/actions/App/Http/Controllers/CartController';
+import { login } from '@/routes';
 import { index, show } from '@/routes/products';
-import { Form, Head, Link } from '@inertiajs/react';
+import { Form, Link, usePage } from '@inertiajs/react';
 import { ArrowLeft, ShoppingCart } from 'lucide-react';
 
 import StockBadge from '@/components/products/stock-badge';
@@ -15,8 +16,8 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem } from '@/types';
+import { type SharedData } from '@/types';
+import ShopLayout from '@/layouts/shop-layout';
 
 interface Product {
     id: number;
@@ -29,28 +30,18 @@ interface ProductsShowProps {
     product: Product;
 }
 
-const breadcrumbs = (product: Product): BreadcrumbItem[] => [
-    {
-        title: 'Products',
-        href: index().url,
-    },
-    {
-        title: product.name,
-        href: show(product.id).url,
-    },
-];
-
 export default function ProductsShow({ product }: ProductsShowProps) {
+    const { auth } = usePage<SharedData>().props;
+    const isAuthenticated = !!auth?.user;
     const isOutOfStock = product.stock_quantity === 0;
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs(product)}>
-            <Head title={product.name} />
+        <ShopLayout title={product.name}>
 
-            <div className="space-y-6">
+            <div className="container mx-auto space-y-6 px-4 py-8">
                 <Link
                     href={index().url}
-                    className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+                    className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
                 >
                     <ArrowLeft className="size-4" />
                     Back to Products
@@ -77,42 +68,56 @@ export default function ProductsShow({ product }: ProductsShowProps) {
                         </div>
                     </CardContent>
                     <CardFooter className="flex flex-col gap-4">
-                        <Form
-                            {...CartController.store.form()}
-                            className="w-full"
-                        >
-                            <input type="hidden" name="product_id" value={product.id} />
-                            <div className="flex gap-2">
-                                <div className="flex-1">
-                                    <Label htmlFor="quantity" className="sr-only">
-                                        Quantity
-                                    </Label>
-                                    <Input
-                                        id="quantity"
-                                        name="quantity"
-                                        type="number"
-                                        min="1"
-                                        max={product.stock_quantity}
-                                        defaultValue="1"
+                        {isAuthenticated ? (
+                            <Form
+                                {...CartController.store.form()}
+                                className="w-full"
+                            >
+                                <input type="hidden" name="product_id" value={product.id} />
+                                <div className="flex gap-2">
+                                    <div className="flex-1">
+                                        <Label htmlFor="quantity" className="sr-only">
+                                            Quantity
+                                        </Label>
+                                        <Input
+                                            id="quantity"
+                                            name="quantity"
+                                            type="number"
+                                            min="1"
+                                            max={product.stock_quantity}
+                                            defaultValue="1"
+                                            disabled={isOutOfStock}
+                                            className="w-full"
+                                        />
+                                    </div>
+                                    <Button
+                                        type="submit"
                                         disabled={isOutOfStock}
-                                        className="w-full"
-                                    />
+                                        size="lg"
+                                        className="shrink-0"
+                                    >
+                                        <ShoppingCart className="size-4" />
+                                        <span className="ml-2">Add to Cart</span>
+                                    </Button>
                                 </div>
-                                <Button
-                                    type="submit"
-                                    disabled={isOutOfStock}
-                                    size="lg"
-                                    className="shrink-0"
-                                >
+                            </Form>
+                        ) : (
+                            <Button
+                                asChild
+                                disabled={isOutOfStock}
+                                size="lg"
+                                className="w-full"
+                            >
+                                <Link href={login().url}>
                                     <ShoppingCart className="size-4" />
-                                    <span className="ml-2">Add to Cart</span>
-                                </Button>
-                            </div>
-                        </Form>
+                                    <span className="ml-2">Login to Add to Cart</span>
+                                </Link>
+                            </Button>
+                        )}
                     </CardFooter>
                 </Card>
             </div>
-        </AppLayout>
+        </ShopLayout>
     );
 }
 

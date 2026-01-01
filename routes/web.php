@@ -4,11 +4,14 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use Laravel\Fortify\Features;
 
 Route::get('/', function () {
-    return Inertia::render('welcome', [
-        'canRegister' => Features::enabled(Features::registration()),
+    $featuredProducts = \App\Models\Product::inRandomOrder()
+        ->limit(8)
+        ->get();
+
+    return Inertia::render('Shop/Home', [
+        'featuredProducts' => $featuredProducts,
     ]);
 })->name('home');
 
