@@ -13,6 +13,7 @@ interface Product {
     name: string;
     price: string;
     stock_quantity: number;
+    image_url?: string;
 }
 
 interface PaginatedProducts {

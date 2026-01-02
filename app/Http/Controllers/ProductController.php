@@ -56,6 +56,13 @@ class ProductController extends Controller
 
         $products = $query->paginate(12)->withQueryString();
 
+        // Add image_url to each product
+        $products->getCollection()->transform(function ($product) {
+            $product->image_url = $product->getImageUrl();
+
+            return $product;
+        });
+
         // Get price range for filter UI
         $priceRange = [
             'min' => (float) Product::min('price'),
@@ -75,6 +82,7 @@ class ProductController extends Controller
     public function show(Product $product): Response
     {
         $product->load('cartItems');
+        $product->image_url = $product->getImageUrl();
 
         return Inertia::render('Products/Show', [
             'product' => $product,
