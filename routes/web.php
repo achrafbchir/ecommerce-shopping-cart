@@ -35,6 +35,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('{cartItem}', [CartController::class, 'destroy'])->name('destroy');
         Route::post('checkout', [CartController::class, 'checkout'])->name('checkout');
     });
+
+    // Admin routes
+    Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
+        Route::get('dashboard', [\App\Http\Controllers\Admin\AdminDashboardController::class, 'index'])->name('dashboard');
+    });
 });
 
 require __DIR__.'/settings.php';
