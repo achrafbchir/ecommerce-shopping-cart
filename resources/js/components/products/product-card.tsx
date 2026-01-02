@@ -23,6 +23,7 @@ interface Product {
     name: string;
     price: string;
     stock_quantity: number;
+    image_url?: string;
 }
 
 interface ProductCardProps {
@@ -35,7 +36,19 @@ export default function ProductCard({ product }: ProductCardProps) {
     const isOutOfStock = product.stock_quantity === 0;
 
     return (
-        <Card className="flex flex-col">
+        <Card className="flex flex-col overflow-hidden">
+            {product.image_url && (
+                <Link href={show(product.id).url} className="block">
+                    <div className="relative aspect-square w-full overflow-hidden bg-muted">
+                        <img
+                            src={product.image_url}
+                            alt={product.name}
+                            className="h-full w-full object-cover transition-transform hover:scale-105"
+                            loading="lazy"
+                        />
+                    </div>
+                </Link>
+            )}
             <CardHeader>
                 <div className="flex items-start justify-between gap-2">
                     <CardTitle className="line-clamp-2">{product.name}</CardTitle>

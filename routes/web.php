@@ -8,7 +8,12 @@ use Inertia\Inertia;
 Route::get('/', function () {
     $featuredProducts = \App\Models\Product::inRandomOrder()
         ->limit(8)
-        ->get();
+        ->get()
+        ->map(function ($product) {
+            $product->image_url = $product->getImageUrl();
+
+            return $product;
+        });
 
     return Inertia::render('Shop/Home', [
         'featuredProducts' => $featuredProducts,

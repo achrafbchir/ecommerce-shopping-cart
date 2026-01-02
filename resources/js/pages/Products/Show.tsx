@@ -24,6 +24,7 @@ interface Product {
     name: string;
     price: string;
     stock_quantity: number;
+    image_url?: string;
 }
 
 interface ProductsShowProps {
@@ -48,6 +49,15 @@ export default function ProductsShow({ product }: ProductsShowProps) {
                 </Link>
 
                 <Card>
+                    {product.image_url && (
+                        <div className="relative aspect-video w-full overflow-hidden bg-muted">
+                            <img
+                                src={product.image_url}
+                                alt={product.name}
+                                className="h-full w-full object-cover"
+                            />
+                        </div>
+                    )}
                     <CardHeader>
                         <div className="flex items-start justify-between gap-4">
                             <div className="flex-1">

@@ -20,6 +20,8 @@ class Product extends Model
         'name',
         'price',
         'stock_quantity',
+        'image_path',
+        'image_url',
     ];
 
     /**
@@ -58,5 +60,26 @@ class Product extends Model
         $threshold = $threshold ?? config('ecommerce.low_stock_threshold', 10);
 
         return $this->stock_quantity <= $threshold;
+    }
+
+    /**
+     * Get the product image URL with fallback to placeholder.
+     */
+    public function getImageUrl(): string
+    {
+        if ($this->attributes['image_url'] ?? null) {
+            return $this->attributes['image_url'];
+        }
+
+        if ($this->attributes['image_path'] ?? null) {
+            return asset('storage/'.$this->attributes['image_path']);
+        }
+
+        // Return placeholder if no image
+        $seed = $this->id ?? crc32($this->name);
+        $width = 400;
+        $height = 400;
+
+        return "https://picsum.photos/seed/{$seed}/{$width}/{$height}";
     }
 }

@@ -40,49 +40,62 @@ class DatabaseSeeder extends Seeder
                 'name' => 'Laptop Computer',
                 'price' => 999.99,
                 'stock_quantity' => 15,
+                'image_url' => 'https://picsum.photos/seed/laptop/400/400',
             ],
             [
                 'name' => 'Wireless Mouse',
                 'price' => 29.99,
                 'stock_quantity' => 50,
+                'image_url' => 'https://picsum.photos/seed/mouse/400/400',
             ],
             [
                 'name' => 'Mechanical Keyboard',
                 'price' => 149.99,
                 'stock_quantity' => 25,
+                'image_url' => 'https://picsum.photos/seed/keyboard/400/400',
             ],
             [
                 'name' => 'Monitor 27"',
                 'price' => 299.99,
                 'stock_quantity' => 8,
+                'image_url' => 'https://picsum.photos/seed/monitor/400/400',
             ],
             [
                 'name' => 'USB-C Cable',
                 'price' => 19.99,
                 'stock_quantity' => 100,
+                'image_url' => 'https://picsum.photos/seed/cable/400/400',
             ],
             [
                 'name' => 'Webcam HD',
                 'price' => 79.99,
                 'stock_quantity' => 12,
+                'image_url' => 'https://picsum.photos/seed/webcam/400/400',
             ],
             [
                 'name' => 'Headphones',
                 'price' => 89.99,
                 'stock_quantity' => 5,
+                'image_url' => 'https://picsum.photos/seed/headphones/400/400',
             ],
             [
                 'name' => 'Desk Lamp',
                 'price' => 39.99,
                 'stock_quantity' => 30,
+                'image_url' => 'https://picsum.photos/seed/lamp/400/400',
             ],
         ];
 
         foreach ($products as $productData) {
-            Product::firstOrCreate(
+            $product = Product::firstOrCreate(
                 ['name' => $productData['name']],
                 $productData
             );
+
+            // Update image_url if product already exists
+            if ($product->wasRecentlyCreated === false && ! $product->image_url) {
+                $product->update(['image_url' => $productData['image_url']]);
+            }
         }
     }
 }

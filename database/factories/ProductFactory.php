@@ -16,10 +16,13 @@ class ProductFactory extends Factory
      */
     public function definition(): array
     {
+        $seed = fake()->word();
+
         return [
             'name' => fake()->words(3, true),
             'price' => fake()->randomFloat(2, 10, 1000),
             'stock_quantity' => fake()->numberBetween(0, 100),
+            'image_url' => "https://picsum.photos/seed/{$seed}/400/400",
         ];
     }
 }
