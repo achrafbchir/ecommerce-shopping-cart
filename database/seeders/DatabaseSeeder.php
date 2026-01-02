@@ -15,14 +15,20 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // Create admin user
-        User::firstOrCreate(
+        $admin = User::firstOrCreate(
             ['email' => config('ecommerce.admin_email', 'admin@example.com')],
             [
                 'name' => 'Admin User',
                 'password' => Hash::make('password'),
                 'email_verified_at' => now(),
+                'is_admin' => true,
             ]
         );
+
+        // Ensure existing admin user has is_admin set to true
+        if (! $admin->wasRecentlyCreated && ! $admin->is_admin) {
+            $admin->update(['is_admin' => true]);
+        }
 
         // Create test user
         User::firstOrCreate(
