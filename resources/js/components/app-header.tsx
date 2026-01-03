@@ -36,13 +36,7 @@ import { BookOpen, Folder, LayoutGrid, Menu, Search } from 'lucide-react';
 import AppLogo from './app-logo';
 import AppLogoIcon from './app-logo-icon';
 
-const mainNavItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: dashboard(),
-        icon: LayoutGrid,
-    },
-];
+// mainNavItems will be defined inside the component to access user data
 
 const rightNavItems: NavItem[] = [
     {
@@ -66,6 +60,16 @@ interface AppHeaderProps {
 
 export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
     const page = usePage<SharedData>();
+    const isAdmin = page.props.auth?.user?.is_admin ?? false;
+    const dashboardUrl = isAdmin ? '/admin/dashboard' : dashboard().url;
+    
+    const mainNavItems: NavItem[] = [
+        {
+            title: 'Dashboard',
+            href: dashboardUrl,
+            icon: LayoutGrid,
+        },
+    ];
     const { auth } = page.props;
     const getInitials = useInitials();
     return (
@@ -140,7 +144,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                     </div>
 
                     <Link
-                        href={dashboard()}
+                        href={dashboardUrl}
                         prefetch
                         className="flex items-center space-x-2"
                     >
