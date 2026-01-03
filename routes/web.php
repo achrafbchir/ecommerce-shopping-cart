@@ -39,6 +39,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Admin routes
     Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
         Route::get('dashboard', [\App\Http\Controllers\Admin\AdminDashboardController::class, 'index'])->name('dashboard');
+
+        // Product management
+        Route::resource('products', \App\Http\Controllers\Admin\AdminProductController::class);
     });
 });
 

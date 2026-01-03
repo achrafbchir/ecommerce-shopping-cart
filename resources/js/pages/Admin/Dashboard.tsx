@@ -3,6 +3,7 @@ import {
     AlertCircle,
     DollarSign,
     Package,
+    Plus,
     ShoppingBag,
     Users,
 } from 'lucide-react';
@@ -21,6 +22,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 
@@ -97,11 +99,27 @@ export default function AdminDashboard({
         <AppLayout breadcrumbs={breadcrumbs}>
             <div className="space-y-6 p-6">
                 {/* Header */}
-                <div>
-                    <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-                    <p className="text-muted-foreground">
-                        Overview of your e-commerce store performance
-                    </p>
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+                        <p className="text-muted-foreground">
+                            Overview of your e-commerce store performance
+                        </p>
+                    </div>
+                    <div className="flex gap-2">
+                        <Button asChild>
+                            <Link href="/admin/products">
+                                <Package className="mr-2 size-4" />
+                                Manage Products
+                            </Link>
+                        </Button>
+                        <Button asChild variant="outline">
+                            <Link href="/admin/products/create">
+                                <Plus className="mr-2 size-4" />
+                                Add Product
+                            </Link>
+                        </Button>
+                    </div>
                 </div>
 
                 {/* Statistics Cards */}
