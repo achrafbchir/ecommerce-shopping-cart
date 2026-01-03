@@ -25,6 +25,11 @@ Route::get('products/{product}', [ProductController::class, 'show'])->name('prod
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
+        // Redirect admins to admin dashboard
+        if (auth()->user()?->isAdmin()) {
+            return redirect()->route('admin.dashboard');
+        }
+
         return Inertia::render('dashboard');
     })->name('dashboard');
 

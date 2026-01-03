@@ -59,14 +59,15 @@ export default function Navbar() {
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
-                                    {auth.user?.is_admin && (
+                                    {auth.user?.is_admin ? (
                                         <DropdownMenuItem asChild>
-                                            <Link href="/admin/dashboard">Admin Dashboard</Link>
+                                            <Link href="/admin/dashboard">Dashboard</Link>
+                                        </DropdownMenuItem>
+                                    ) : (
+                                        <DropdownMenuItem asChild>
+                                            <Link href="/dashboard">Dashboard</Link>
                                         </DropdownMenuItem>
                                     )}
-                                    <DropdownMenuItem asChild>
-                                        <Link href="/dashboard">Dashboard</Link>
-                                    </DropdownMenuItem>
                                     <DropdownMenuItem asChild>
                                         <Link href="/settings/profile">Settings</Link>
                                     </DropdownMenuItem>
