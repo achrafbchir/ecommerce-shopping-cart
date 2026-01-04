@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ProductIndexRequest;
 use App\Models\Product;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -12,7 +12,7 @@ class ProductController extends Controller
     /**
      * Display a listing of the products.
      */
-    public function index(Request $request): Response
+    public function index(ProductIndexRequest $request): Response
     {
         $query = Product::query();
 
