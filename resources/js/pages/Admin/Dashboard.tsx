@@ -60,12 +60,22 @@ interface Statistics {
     monthSales: number;
     monthRevenue: number;
     outOfStockProducts: number;
+    newUsersToday: number;
+    newUsersThisMonth: number;
+    verifiedUsers: number;
+    usersWithActiveCart: number;
+    totalCartItems: number;
 }
 
 interface ChartData {
     date: string;
     sales: number;
     revenue: number;
+}
+
+interface UserRegistrationChartData {
+    date: string;
+    users: number;
 }
 
 interface AdminDashboardProps {
@@ -75,6 +85,7 @@ interface AdminDashboardProps {
     recentSales: Sale[];
     salesChartData: ChartData[];
     revenueChartData: ChartData[];
+    userRegistrationChartData: UserRegistrationChartData[];
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -91,9 +102,11 @@ export default function AdminDashboard({
     recentSales,
     salesChartData,
     revenueChartData,
+    userRegistrationChartData,
 }: AdminDashboardProps) {
     const maxSales = Math.max(...salesChartData.map((d) => d.sales), 1);
     const maxRevenue = Math.max(...revenueChartData.map((d) => d.revenue), 1);
+    const maxUsers = Math.max(...userRegistrationChartData.map((d) => d.users), 1);
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -107,6 +120,12 @@ export default function AdminDashboard({
                         </p>
                     </div>
                     <div className="flex gap-2">
+                        <Button asChild variant="outline">
+                            <Link href="/admin/users">
+                                <Users className="mr-2 size-4" />
+                                Manage Users
+                            </Link>
+                        </Button>
                         <Button asChild>
                             <Link href="/admin/products">
                                 <Package className="mr-2 size-4" />
@@ -271,8 +290,79 @@ export default function AdminDashboard({
                     </Card>
                 </div>
 
+                {/* User Statistics */}
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">
+                                New Users Today
+                            </CardTitle>
+                            <Users className="size-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">
+                                {statistics.newUsersToday}
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                                Registered today
+                            </p>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">
+                                New Users This Month
+                            </CardTitle>
+                            <Users className="size-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">
+                                {statistics.newUsersThisMonth}
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                                Registered this month
+                            </p>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">
+                                Verified Users
+                            </CardTitle>
+                            <Users className="size-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">
+                                {statistics.verifiedUsers}
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                                Email verified
+                            </p>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">
+                                Active Carts
+                            </CardTitle>
+                            <ShoppingBag className="size-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">
+                                {statistics.usersWithActiveCart}
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                                {statistics.totalCartItems} items in carts
+                            </p>
+                        </CardContent>
+                    </Card>
+                </div>
+
                 {/* Charts */}
-                <div className="grid gap-4 md:grid-cols-2">
+                <div className="grid gap-4 md:grid-cols-3">
                     <Card>
                         <CardHeader>
                             <CardTitle>Sales (Last 7 Days)</CardTitle>
@@ -341,6 +431,45 @@ export default function AdminDashboard({
                                                             : '0px',
                                                 }}
                                                 title={`${data.date}: $${data.revenue.toFixed(2)}`}
+                                            />
+                                        </div>
+                                        <span className="text-xs text-muted-foreground">
+                                            {data.date.split(' ')[0]}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>User Registrations</CardTitle>
+                            <CardDescription>
+                                New users per day (last 7 days)
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="flex h-[200px] items-end justify-between gap-2">
+                                {userRegistrationChartData.map((data, index) => (
+                                    <div
+                                        key={index}
+                                        className="flex flex-1 flex-col items-center gap-2"
+                                    >
+                                        <div className="relative flex w-full flex-col items-center justify-end">
+                                            <div
+                                                className="w-full rounded-t bg-blue-500 transition-all hover:bg-blue-600"
+                                                style={{
+                                                    height: `${
+                                                        (data.users / maxUsers) *
+                                                        100
+                                                    }%`,
+                                                    minHeight:
+                                                        data.users > 0
+                                                            ? '4px'
+                                                            : '0px',
+                                                }}
+                                                title={`${data.date}: ${data.users} users`}
                                             />
                                         </div>
                                         <span className="text-xs text-muted-foreground">

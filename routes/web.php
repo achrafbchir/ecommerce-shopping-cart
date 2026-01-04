@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminProductController;
+use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
@@ -30,6 +31,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Product management
         Route::resource('products', AdminProductController::class);
+
+        // User management (no create/store routes)
+        Route::resource('users', AdminUserController::class)->except(['create', 'store']);
     });
 });
 

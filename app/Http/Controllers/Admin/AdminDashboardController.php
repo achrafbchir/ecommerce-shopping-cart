@@ -24,6 +24,25 @@ class AdminDashboardController extends Controller
         $totalSales = Sale::count();
         $totalRevenue = Sale::sum(DB::raw('quantity * price'));
 
+        // User statistics
+        $newUsersToday = User::where('is_admin', false)
+            ->whereDate('created_at', today())
+            ->count();
+        $newUsersThisMonth = User::where('is_admin', false)
+            ->whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->count();
+        $verifiedUsers = User::where('is_admin', false)
+            ->whereNotNull('email_verified_at')
+            ->count();
+        $usersWithActiveCart = User::where('is_admin', false)
+            ->has('cartItems')
+            ->count();
+        $totalCartItems = DB::table('cart_items')
+            ->join('users', 'cart_items.user_id', '=', 'users.id')
+            ->where('users.is_admin', false)
+            ->count();
+
         // Today's statistics
         $todaySales = Sale::whereDate('sold_at', today())->count();
         $todayRevenue = Sale::whereDate('sold_at', today())
@@ -36,6 +55,20 @@ class AdminDashboardController extends Controller
         $monthRevenue = Sale::whereMonth('sold_at', now()->month)
             ->whereYear('sold_at', now()->year)
             ->sum(DB::raw('quantity * price'));
+
+        // User registration chart data (last 7 days)
+        $userRegistrationChartData = [];
+        for ($i = 6; $i >= 0; $i--) {
+            $date = now()->subDays($i);
+            $dayUsers = User::where('is_admin', false)
+                ->whereDate('created_at', $date)
+                ->count();
+
+            $userRegistrationChartData[] = [
+                'date' => $date->format('M j'),
+                'users' => $dayUsers,
+            ];
+        }
 
         // Low stock products
         $lowStockThreshold = config('ecommerce.low_stock_threshold', 10);
@@ -119,12 +152,19 @@ class AdminDashboardController extends Controller
                 'monthSales' => $monthSales,
                 'monthRevenue' => (float) $monthRevenue,
                 'outOfStockProducts' => $outOfStockProducts,
+                // User statistics
+                'newUsersToday' => $newUsersToday,
+                'newUsersThisMonth' => $newUsersThisMonth,
+                'verifiedUsers' => $verifiedUsers,
+                'usersWithActiveCart' => $usersWithActiveCart,
+                'totalCartItems' => $totalCartItems,
             ],
             'lowStockProducts' => $lowStockProducts,
             'topSellingProducts' => $topSellingProducts,
             'recentSales' => $recentSales,
             'salesChartData' => $salesChartData,
             'revenueChartData' => $revenueChartData,
+            'userRegistrationChartData' => $userRegistrationChartData,
         ]);
     }
 }

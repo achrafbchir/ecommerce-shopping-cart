@@ -13,7 +13,7 @@ import {
 import { dashboard } from '@/routes';
 import { type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid } from 'lucide-react';
+import { BookOpen, Folder, LayoutGrid, Package, Users } from 'lucide-react';
 import AppLogo from './app-logo';
 
 // mainNavItems will be defined inside the component to access user data
@@ -43,6 +43,20 @@ export function AppSidebar() {
             href: dashboardUrl,
             icon: LayoutGrid,
         },
+        ...(isAdmin
+            ? [
+                  {
+                      title: 'Users',
+                      href: '/admin/users',
+                      icon: Users,
+                  } as NavItem,
+                  {
+                      title: 'Products',
+                      href: '/admin/products',
+                      icon: Package,
+                  } as NavItem,
+              ]
+            : []),
     ];
 
     return (
