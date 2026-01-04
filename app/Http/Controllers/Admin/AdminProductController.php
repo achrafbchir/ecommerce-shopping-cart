@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\AdminProductIndexRequest;
 use App\Http\Requests\Admin\StoreProductRequest;
 use App\Http\Requests\Admin\UpdateProductRequest;
 use App\Models\Product;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -17,7 +17,7 @@ class AdminProductController extends Controller
     /**
      * Display a listing of the products.
      */
-    public function index(Request $request): Response
+    public function index(AdminProductIndexRequest $request): Response
     {
         $query = Product::query();
 
