@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CheckoutRequest;
 use App\Http\Requests\StoreCartItemRequest;
 use App\Http\Requests\UpdateCartItemRequest;
 use App\Jobs\CheckLowStockJob;
@@ -54,13 +55,7 @@ class CartController extends Controller
             ->first();
 
         if ($cartItem) {
-            $newQuantity = $cartItem->quantity + $request->quantity;
-            if ($newQuantity > $product->stock_quantity) {
-                return back()->withErrors([
-                    'quantity' => 'The total quantity cannot exceed the available stock.',
-                ]);
-            }
-            $cartItem->update(['quantity' => $newQuantity]);
+            $cartItem->update(['quantity' => $cartItem->quantity + $request->quantity]);
         } else {
             $request->user()->cartItems()->create([
                 'product_id' => $product->id,
@@ -112,31 +107,12 @@ class CartController extends Controller
     /**
      * Checkout - convert cart items to sales.
      */
-    public function checkout(Request $request): RedirectResponse
+    public function checkout(CheckoutRequest $request): RedirectResponse
     {
-        $request->validate([
-            'confirm' => ['required', 'accepted'],
-        ]);
-
         $cartItems = $request->user()
             ->cartItems()
             ->with('product')
             ->get();
-
-        if ($cartItems->isEmpty()) {
-            return redirect()->route('cart.index')->withErrors([
-                'cart' => 'Your cart is empty.',
-            ]);
-        }
-
-        // Validate stock availability
-        foreach ($cartItems as $cartItem) {
-            if ($cartItem->quantity > $cartItem->product->stock_quantity) {
-                return redirect()->route('cart.index')->withErrors([
-                    'cart' => "Insufficient stock for {$cartItem->product->name}.",
-                ]);
-            }
-        }
 
         DB::transaction(function () use ($cartItems, $request) {
             foreach ($cartItems as $cartItem) {

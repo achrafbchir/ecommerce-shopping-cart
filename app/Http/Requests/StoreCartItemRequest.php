@@ -24,13 +24,40 @@ class StoreCartItemRequest extends FormRequest
     {
         return [
             'product_id' => ['required', 'exists:products,id'],
-            'quantity' => ['required', 'integer', 'min:1', function ($attribute, $value, $fail) {
-                $product = Product::find($this->product_id);
-                if ($product && $value > $product->stock_quantity) {
-                    $fail('The quantity cannot exceed the available stock.');
-                }
-            }],
+            'quantity' => ['required', 'integer', 'min:1'],
         ];
+    }
+
+    /**
+     * Configure the validator instance.
+     */
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator) {
+            $product = Product::find($this->product_id);
+
+            if (! $product) {
+                return;
+            }
+
+            // Check if user already has this product in cart
+            $existingCartItem = $this->user()
+                ->cartItems()
+                ->where('product_id', $product->id)
+                ->first();
+
+            $requestedQuantity = (int) $this->quantity;
+            $totalQuantity = $existingCartItem
+                ? $existingCartItem->quantity + $requestedQuantity
+                : $requestedQuantity;
+
+            if ($totalQuantity > $product->stock_quantity) {
+                $validator->errors()->add(
+                    'quantity',
+                    'The total quantity cannot exceed the available stock.'
+                );
+            }
+        });
     }
 
     /**
