@@ -25,7 +25,7 @@ class ProductIndexRequest extends FormRequest
             'search' => ['nullable', 'string', 'max:255'],
             'min_price' => ['nullable', 'numeric', 'min:0'],
             'max_price' => ['nullable', 'numeric', 'min:0', 'gte:min_price'],
-            'stock_status' => ['nullable', 'string', 'in:in_stock,low_stock,out_of_stock'],
+            'stock_status' => ['nullable', 'string', 'in:all,in_stock,low_stock,out_of_stock'],
             'sort_by' => ['nullable', 'string', 'in:latest,price_low,price_high,name_asc,name_desc,stock_high,stock_low'],
         ];
     }
