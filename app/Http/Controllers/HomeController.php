@@ -3,12 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Services\ProductService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class HomeController extends Controller
 {
+    public function __construct(
+        private readonly ProductService $productService
+    ) {
+    }
+
     /**
      * Display the home page with featured products.
      */
@@ -18,9 +24,7 @@ class HomeController extends Controller
             ->limit(8)
             ->get()
             ->map(function ($product) {
-                $product->image_url = $product->getImageUrl();
-
-                return $product;
+                return $this->productService->getProductWithImage($product);
             });
 
         return Inertia::render('Shop/Home', [

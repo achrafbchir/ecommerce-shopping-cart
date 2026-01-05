@@ -5,42 +5,27 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CheckoutRequest;
 use App\Http\Requests\StoreCartItemRequest;
 use App\Http\Requests\UpdateCartItemRequest;
-use App\Jobs\CheckLowStockJob;
 use App\Models\CartItem;
-use App\Models\Product;
-use App\Models\Sale;
+use App\Services\CartService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class CartController extends Controller
 {
+    public function __construct(
+        private readonly CartService $cartService
+    ) {}
+
     /**
      * Display the user's shopping cart.
      */
     public function index(Request $request): Response
     {
-        $cartItems = $request->user()
-            ->cartItems()
-            ->with('product')
-            ->latest()
-            ->get()
-            ->map(function ($item) {
-                $item->total_price = $item->quantity * (float) $item->product->price;
+        $data = $this->cartService->getUserCart($request->user());
 
-                return $item;
-            });
-
-        $total = $cartItems->sum('total_price');
-        $cartCount = $cartItems->sum('quantity');
-
-        return Inertia::render('Cart/Index', [
-            'cartItems' => $cartItems,
-            'total' => $total,
-            'cartCount' => $cartCount,
-        ]);
+        return Inertia::render('Cart/Index', $data);
     }
 
     /**
@@ -48,25 +33,11 @@ class CartController extends Controller
      */
     public function store(StoreCartItemRequest $request): RedirectResponse
     {
-        $product = Product::findOrFail($request->product_id);
-
-        $cartItem = $request->user()->cartItems()
-            ->where('product_id', $product->id)
-            ->first();
-
-        if ($cartItem) {
-            $cartItem->update(['quantity' => $cartItem->quantity + $request->quantity]);
-        } else {
-            $request->user()->cartItems()->create([
-                'product_id' => $product->id,
-                'quantity' => $request->quantity,
-            ]);
-        }
-
-        // Check for low stock after adding to cart
-        if ($product->isLowStock()) {
-            CheckLowStockJob::dispatch($product);
-        }
+        $this->cartService->addToCart(
+            $request->user(),
+            $request->product_id,
+            $request->quantity
+        );
 
         return redirect()->route('cart.index')->with('success', 'Product added to cart.');
     }
@@ -76,16 +47,11 @@ class CartController extends Controller
      */
     public function update(UpdateCartItemRequest $request, CartItem $cartItem): RedirectResponse
     {
-        if ($cartItem->user_id !== $request->user()->id) {
-            abort(403);
-        }
-
-        $cartItem->update($request->validated());
-
-        // Check for low stock after updating
-        if ($cartItem->product->isLowStock()) {
-            CheckLowStockJob::dispatch($cartItem->product);
-        }
+        $this->cartService->updateCartItem(
+            $cartItem,
+            $request->user(),
+            $request->quantity
+        );
 
         return redirect()->route('cart.index')->with('success', 'Cart updated.');
     }
@@ -95,11 +61,7 @@ class CartController extends Controller
      */
     public function destroy(Request $request, CartItem $cartItem): RedirectResponse
     {
-        if ($cartItem->user_id !== $request->user()->id) {
-            abort(403);
-        }
-
-        $cartItem->delete();
+        $this->cartService->removeFromCart($cartItem, $request->user());
 
         return redirect()->route('cart.index')->with('success', 'Item removed from cart.');
     }
@@ -109,33 +71,7 @@ class CartController extends Controller
      */
     public function checkout(CheckoutRequest $request): RedirectResponse
     {
-        $cartItems = $request->user()
-            ->cartItems()
-            ->with('product')
-            ->get();
-
-        DB::transaction(function () use ($cartItems, $request) {
-            foreach ($cartItems as $cartItem) {
-                // Create sale record
-                Sale::create([
-                    'product_id' => $cartItem->product_id,
-                    'quantity' => $cartItem->quantity,
-                    'price' => $cartItem->product->price,
-                    'sold_at' => now(),
-                ]);
-
-                // Update product stock
-                $cartItem->product->decrement('stock_quantity', $cartItem->quantity);
-
-                // Check for low stock
-                if ($cartItem->product->fresh()->isLowStock()) {
-                    CheckLowStockJob::dispatch($cartItem->product->fresh());
-                }
-            }
-
-            // Clear cart
-            $request->user()->cartItems()->delete();
-        });
+        $this->cartService->checkout($request->user());
 
         return redirect()->route('products.index')->with('success', 'Order placed successfully!');
     }
