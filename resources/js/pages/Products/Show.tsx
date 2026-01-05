@@ -80,7 +80,8 @@ export default function ProductsShow({ product }: ProductsShowProps) {
                     <CardFooter className="flex flex-col gap-4">
                         {isAuthenticated ? (
                             <Form
-                                {...CartController.store.form()}
+                                action={CartController.store.url()}
+                                method="post"
                                 className="w-full"
                             >
                                 <input type="hidden" name="product_id" value={product.id} />

@@ -107,7 +107,8 @@ export default function CartItemRow({ cartItem }: CartItemRowProps) {
             </TableCell>
             <TableCell>
                 <Form
-                    {...CartController.destroy.form(cartItem.id)}
+                    action={CartController.destroy.url(cartItem.id)}
+                    method="delete"
                 >
                     <Button
                         type="submit"

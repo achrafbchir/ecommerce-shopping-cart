@@ -1,7 +1,9 @@
 import { index } from '@/routes/cart';
 import { index as productsIndex, show } from '@/routes/products';
+import { home } from '@/routes';
 import { Link } from '@inertiajs/react';
 import {
+    Home,
     Package,
     ShoppingBag,
     ShoppingCart,
@@ -71,11 +73,19 @@ export default function Dashboard({
             <Head title="Dashboard" />
             <div className="space-y-6 p-6">
                 {/* Header */}
-                <div>
-                    <h1 className="text-3xl font-bold">Welcome Back!</h1>
-                    <p className="text-muted-foreground">
-                        Here's an overview of your account
-                    </p>
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h1 className="text-3xl font-bold">Welcome Back!</h1>
+                        <p className="text-muted-foreground">
+                            Here's an overview of your account
+                        </p>
+                    </div>
+                    <Button asChild variant="outline">
+                        <Link href={home().url}>
+                            <Home className="mr-2 size-4" />
+                            Back to Shop
+                        </Link>
+                    </Button>
                 </div>
 
                 {/* Statistics Cards */}
