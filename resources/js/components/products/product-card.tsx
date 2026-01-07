@@ -74,7 +74,8 @@ export default function ProductCard({ product }: ProductCardProps) {
                 </Link>
                 {isAuthenticated ? (
                     <Form
-                        {...CartController.store.form()}
+                        action={CartController.store.url()}
+                        method="post"
                         className="w-full"
                     >
                         <input type="hidden" name="product_id" value={product.id} />

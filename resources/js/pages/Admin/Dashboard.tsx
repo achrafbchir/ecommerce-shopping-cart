@@ -1,7 +1,9 @@
+import { home } from '@/routes';
 import { Link } from '@inertiajs/react';
 import {
     AlertCircle,
     DollarSign,
+    Home,
     Package,
     Plus,
     ShoppingBag,
@@ -120,6 +122,12 @@ export default function AdminDashboard({
                         </p>
                     </div>
                     <div className="flex gap-2">
+                        <Button asChild variant="outline">
+                            <Link href={home().url}>
+                                <Home className="mr-2 size-4" />
+                                Back to Shop
+                            </Link>
+                        </Button>
                         <Button asChild variant="outline">
                             <Link href="/admin/users">
                                 <Users className="mr-2 size-4" />

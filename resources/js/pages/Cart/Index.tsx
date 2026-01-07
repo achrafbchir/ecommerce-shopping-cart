@@ -129,7 +129,8 @@ export default function CartIndex({ cartItems, total }: CartIndexProps) {
                                 </CardContent>
                                 <CardFooter>
                                     <Form
-                                        {...CartController.checkout.form()}
+                                        action={CartController.checkout.url()}
+                                        method="post"
                                         className="w-full"
                                     >
                                         <input type="hidden" name="confirm" value="1" />
