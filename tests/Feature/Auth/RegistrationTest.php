@@ -26,6 +26,7 @@ class RegistrationTest extends TestCase
         ]);
 
         $this->assertAuthenticated();
-        $response->assertRedirect(route('home', absolute: false));
+        // User should be redirected to email verification page if email is not verified
+        $response->assertRedirect(route('verification.notice', absolute: false));
     }
 }
