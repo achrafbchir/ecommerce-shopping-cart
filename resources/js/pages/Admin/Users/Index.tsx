@@ -283,17 +283,27 @@ export default function UsersIndex({ users, filters }: UsersIndexProps) {
                                                     <TableCell className="text-right">
                                                         <DropdownMenu>
                                                             <DropdownMenuTrigger asChild>
-                                                                <Button
-                                                                    variant="ghost"
-                                                                    size="sm"
-                                                                >
-                                                                    Actions
+                                                                <Button variant="ghost" size="icon">
+                                                                    <span className="sr-only">
+                                                                        Open menu
+                                                                    </span>
+                                                                    <svg
+                                                                        className="size-4"
+                                                                        fill="none"
+                                                                        stroke="currentColor"
+                                                                        viewBox="0 0 24 24"
+                                                                    >
+                                                                        <path
+                                                                            strokeLinecap="round"
+                                                                            strokeLinejoin="round"
+                                                                            strokeWidth={2}
+                                                                            d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
+                                                                        />
+                                                                    </svg>
                                                                 </Button>
                                                             </DropdownMenuTrigger>
                                                             <DropdownMenuContent align="end">
-                                                                <DropdownMenuItem
-                                                                    asChild
-                                                                >
+                                                                <DropdownMenuItem asChild>
                                                                     <a
                                                                         href={AdminUserController.show.url(
                                                                             user.id
